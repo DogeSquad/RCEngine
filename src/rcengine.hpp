@@ -6,6 +6,7 @@
 #include "rce_pipeline.hpp"
 #include "rce_device.hpp"
 #include "rce_swap_chain.hpp"
+#include "rce_model.hpp"
 
 #include <memory>
 #include <vector>
@@ -24,6 +25,7 @@ namespace rce {
 
 		void run();
 	private:
+		void loadModels();
 		void createPipelineLayout();
 		void createPipeline();
 		void createCommandBuffers();
@@ -35,5 +37,6 @@ namespace rce {
 		std::unique_ptr<RCEPipeline> rcePipeline;
 		VkPipelineLayout pipelineLayout;
 		std::vector<VkCommandBuffer> commandBuffers;
+		std::unique_ptr<RCEModel> rceModel;
 	};
 }

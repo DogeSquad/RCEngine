@@ -7,6 +7,7 @@ namespace rce {
 
 RCEngine::RCEngine()
 {
+	loadModels();
 	createPipelineLayout();
 	createPipeline();
 	createCommandBuffers();
@@ -24,6 +25,17 @@ void RCEngine::run()
 	}
 
 	vkDeviceWaitIdle(rceDevice.device());
+}
+
+void RCEngine::loadModels()
+{
+	std::vector<RCEModel::Vertex> vertices{
+		{{ 0.0f, -0.5f}},
+		{{ 0.5f,  0.5f}},
+		{{-0.5f,  0.5f}}
+	};
+
+	rceModel = std::make_unique<RCEModel>(rceDevice, vertices);
 }
 
 void RCEngine::createPipelineLayout()
@@ -90,7 +102,8 @@ void RCEngine::createCommandBuffers()
 		vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 		rcePipeline->bind(commandBuffers[i]);
-		vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
+		rceModel->bind(commandBuffers[i]);
+		rceModel->draw(commandBuffers[i]);
 
 		vkCmdEndRenderPass(commandBuffers[i]);
 		if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS)

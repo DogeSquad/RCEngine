@@ -1,4 +1,5 @@
 #include "rce_pipeline.hpp"
+#include "rce_model.hpp"
 
 #include <fstream>
 #include <stdexcept>
@@ -67,12 +68,14 @@ namespace rce
 		shaderStages[1].pSpecializationInfo = nullptr;
 		shaderStages[1].pNext = nullptr;
 
+		auto attributeDescriptions = RCEModel::Vertex::getAttributeDescriptions();
+		auto bindingDescriptions = RCEModel::Vertex::getBindingDescriptions();
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		vertexInputInfo.vertexAttributeDescriptionCount = 0;
-		vertexInputInfo.vertexBindingDescriptionCount = 0;
-		vertexInputInfo.pVertexAttributeDescriptions = nullptr;
-		vertexInputInfo.pVertexBindingDescriptions = nullptr;
+		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+		vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
+		vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+		vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
 
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -142,7 +145,7 @@ namespace rce
 		configInfo.rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 		configInfo.rasterizationInfo.depthClampEnable = VK_FALSE;
 		configInfo.rasterizationInfo.rasterizerDiscardEnable = VK_FALSE;
-		configInfo.rasterizationInfo.polygonMode = VK_POLYGON_MODE_FILL;
+		configInfo.rasterizationInfo.polygonMode = VK_POLYGON_MODE_LINE; //VK_POLYGON_MODE_FILL;
 		configInfo.rasterizationInfo.lineWidth = 1.0f;
 		configInfo.rasterizationInfo.cullMode = VK_CULL_MODE_NONE;
 		configInfo.rasterizationInfo.frontFace = VK_FRONT_FACE_CLOCKWISE;
