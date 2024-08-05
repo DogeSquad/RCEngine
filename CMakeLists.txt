@@ -63,8 +63,9 @@ if (NOT TINYOBJ_PATH)
 endif()
 
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+file(GLOB_RECURSE INCLUDES ${PROJECT_SOURCE_DIR}/src/*.hpp ${PROJECT_SOURCE_DIR}/src/*.h)
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_executable(${PROJECT_NAME} ${SOURCES} ${INCLUDES})
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 
@@ -140,5 +141,6 @@ endforeach(GLSL)
 
 add_custom_target(
     Shaders
+    SOURCES ${GLSL_SOURCE_FILES}
     DEPENDS ${SPIRV_BINARY_FILES}
 )
