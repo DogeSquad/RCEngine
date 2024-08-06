@@ -6,6 +6,7 @@
 #include <vulkan/vulkan.h>
 
 // std lib headers
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -16,10 +17,11 @@ public:
 	static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
 	RCESwapChain(RCEDevice& deviceRef, VkExtent2D windowExtent);
+	RCESwapChain(RCEDevice& deviceRef, VkExtent2D windowExtent, std::shared_ptr<RCESwapChain> previous);
 	~RCESwapChain();
 
 	RCESwapChain(const RCESwapChain&) = delete;
-	void operator=(const RCESwapChain&) = delete;
+	RCESwapChain& operator=(const RCESwapChain&) = delete;
 
 	VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
 	VkRenderPass getRenderPass() { return renderPass; }
@@ -38,7 +40,14 @@ public:
 	VkResult acquireNextImage(uint32_t* imageIndex);
 	VkResult submitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
 
+	bool compareSwapFormats(const RCESwapChain& swapChain) const 
+	{
+		return swapChain.swapChainDepthFormat == swapChainDepthFormat 
+			&& swapChain.swapChainImageFormat == swapChainImageFormat;
+	}
+
 private:
+	void init();
 	void createSwapChain();
 	void createImageViews();
 	void createDepthResources();
@@ -54,6 +63,7 @@ private:
 	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
 	VkFormat swapChainImageFormat;
+	VkFormat swapChainDepthFormat;
 	VkExtent2D swapChainExtent;
 
 	std::vector<VkFramebuffer> swapChainFramebuffers;
@@ -69,6 +79,7 @@ private:
 	VkExtent2D windowExtent;
 
 	VkSwapchainKHR swapChain;
+	std::shared_ptr<RCESwapChain> oldSwapChain;
 
 	std::vector<VkSemaphore> imageAvailableSemaphores;
 	std::vector<VkSemaphore> renderFinishedSemaphores;

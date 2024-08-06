@@ -39,7 +39,7 @@ public:
 
     // Not copyable or movable
     RCEDevice(const RCEDevice&) = delete;
-    void operator=(const RCEDevice&) = delete;
+    RCEDevice& operator=(const RCEDevice&) = delete;
     RCEDevice(RCEDevice&&) = delete;
     RCEDevice &operator=(RCEDevice &&) = delete;
 

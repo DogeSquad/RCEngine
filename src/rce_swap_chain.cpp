@@ -13,6 +13,18 @@ namespace rce {
 
 RCESwapChain::RCESwapChain(RCEDevice& deviceRef, VkExtent2D extent)
 	: device{ deviceRef }, windowExtent{ extent } {
+	init();
+}
+RCESwapChain::RCESwapChain(RCEDevice& deviceRef, VkExtent2D extent, std::shared_ptr<RCESwapChain> previous)
+	: device{ deviceRef }, windowExtent{ extent }, oldSwapChain{previous} {
+	init();
+
+	// clean old swap chain
+	oldSwapChain = nullptr;
+}
+
+void RCESwapChain::init()
+{
 	createSwapChain();
 	createImageViews();
 	createRenderPass();
@@ -163,7 +175,7 @@ void RCESwapChain::createSwapChain() {
 	createInfo.presentMode = presentMode;
 	createInfo.clipped = VK_TRUE;
 
-	createInfo.oldSwapchain = VK_NULL_HANDLE;
+	createInfo.oldSwapchain = oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain->swapChain;
 
 	if (vkCreateSwapchainKHR(device.device(), &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create swap chain!");
@@ -290,6 +302,7 @@ void RCESwapChain::createFramebuffers() {
 
 void RCESwapChain::createDepthResources() {
 	VkFormat depthFormat = findDepthFormat();
+	swapChainDepthFormat = depthFormat;
 	VkExtent2D swapChainExtent = getSwapChainExtent();
 
 	depthImages.resize(imageCount());
@@ -363,7 +376,7 @@ void RCESwapChain::createSyncObjects() {
 VkSurfaceFormatKHR RCESwapChain::chooseSwapSurfaceFormat(
 	const std::vector<VkSurfaceFormatKHR>& availableFormats) {
 	for (const auto& availableFormat : availableFormats) {
-		if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM &&
+		if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB &&
 			availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
 			return availableFormat;
 		}
@@ -374,12 +387,12 @@ VkSurfaceFormatKHR RCESwapChain::chooseSwapSurfaceFormat(
 
 VkPresentModeKHR RCESwapChain::chooseSwapPresentMode(
 	const std::vector<VkPresentModeKHR>& availablePresentModes) {
-	for (const auto& availablePresentMode : availablePresentModes) {
-		if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
-			std::cout << "Present mode: Mailbox" << std::endl;
-			return availablePresentMode;
-		}
-	}
+	//for (const auto& availablePresentMode : availablePresentModes) {
+	//	if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+	//		std::cout << "Present mode: Mailbox" << std::endl;
+	//		return availablePresentMode;
+	//	}
+	//}
 
 	// for (const auto &availablePresentMode : availablePresentModes) {
 	//   if (availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) {

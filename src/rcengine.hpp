@@ -3,10 +3,10 @@
 // Design inspired by Brendan Galea's YouTube tutorials.
 
 #include "rce_window.hpp"
-#include "rce_pipeline.hpp"
 #include "rce_device.hpp"
-#include "rce_swap_chain.hpp"
 #include "rce_model.hpp"
+#include "rce_object.hpp"
+#include "rce_renderer.hpp"
 
 #include <memory>
 #include <vector>
@@ -25,18 +25,12 @@ namespace rce {
 
 		void run();
 	private:
-		void loadModels();
-		void createPipelineLayout();
-		void createPipeline();
-		void createCommandBuffers();
-		void drawFrame();
+		void loadObjects();
 
-		RCEWindow rceWindow{ WIDTH, HEIGHT, "RCEngine" };
+		RCEWindow rceWindow{ WIDTH, HEIGHT, "Osprey RCE" };
 		RCEDevice rceDevice{ rceWindow };
-		RCESwapChain rceSwapChain{ rceDevice, rceWindow.getExtent()};
-		std::unique_ptr<RCEPipeline> rcePipeline;
-		VkPipelineLayout pipelineLayout;
-		std::vector<VkCommandBuffer> commandBuffers;
-		std::unique_ptr<RCEModel> rceModel;
+		RCERenderer rceRenderer{ rceWindow, rceDevice };
+
+		std::vector<RCEObject> objects;
 	};
 }
