@@ -58,7 +58,7 @@ void RCERenderer::endFrame()
 		throw std::runtime_error("failed to submit to swap chain.");
 
 	isFrameStarted = false;
-	currentFrameIndex = (currentFrameIndex + 1) & RCESwapChain::MAX_FRAMES_IN_FLIGHT;
+	currentFrameIndex = (currentFrameIndex + 1) % RCESwapChain::MAX_FRAMES_IN_FLIGHT;
 }
 
 void RCERenderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer)

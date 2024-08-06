@@ -22,7 +22,7 @@ void RCEngine::run()
 
 	while (!rceWindow.shouldClose()) {
 		glfwPollEvents();
-		
+
 		if (auto commandBuffer = rceRenderer.beginFrame()) {
 			rceRenderer.beginSwapChainRenderPass(commandBuffer);
 			simpleRenderSystem.renderObjects(commandBuffer, objects);
