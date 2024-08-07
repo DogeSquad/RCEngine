@@ -6,6 +6,7 @@
 #include "rce_device.hpp"
 #include "rce_model.hpp"
 #include "rce_object.hpp"
+#include "rce_camera.hpp"
 
 #include <memory>
 #include <vector>
@@ -19,7 +20,10 @@ namespace rce {
 		SimpleRenderSystem(const SimpleRenderSystem&) = delete;
 		SimpleRenderSystem& operator=(const SimpleRenderSystem&) = delete;
 
-		void renderObjects(VkCommandBuffer commandBuffer, std::vector<RCEObject>& objects);
+		void renderObjects(
+			VkCommandBuffer commandBuffer, 
+			std::vector<RCEObject>& objects,
+			const RCECamera& camera);
 	private:
 		void createPipelineLayout();
 		void createPipeline(VkRenderPass renderPass);

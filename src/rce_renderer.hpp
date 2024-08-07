@@ -20,9 +20,10 @@ namespace rce {
 		RCERenderer(const RCERenderer&) = delete;
 		RCERenderer& operator=(const RCERenderer&) = delete;
 
+		VkRenderPass getSwapChainRenderPass() const { return rceSwapChain->getRenderPass(); }
+		float getAspectRatio() const { return rceSwapChain->extentAspectRatio(); }
 		bool isFrameInProgress() const { return isFrameStarted; }
 
-		VkRenderPass getSwapChainRenderPass() const { return rceSwapChain->getRenderPass(); }
 		VkCommandBuffer getCurrentCommandBuffer() const {
 			assert(isFrameStarted && "Cannot get command buffer when frame in progress!");
 			return commandBuffers[currentFrameIndex];

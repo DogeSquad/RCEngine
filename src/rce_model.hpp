@@ -9,11 +9,13 @@
 namespace rce
 {
 
-class RCEModel {
+class RCEModel 
+{
 public:
 
-	struct Vertex {
-		glm::vec2 position;
+	struct Vertex 
+	{
+		glm::vec3 position;
 		glm::vec3 color;
 
 		static std::vector<VkVertexInputBindingDescription> getBindingDescriptions();
