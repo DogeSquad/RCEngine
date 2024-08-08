@@ -13,5 +13,6 @@ layout (push_constant) uniform Push
 
 void main() 
 {
+	vec3 sunDir 
 	outColor = vec4(fragColor, 1.0);
 }
