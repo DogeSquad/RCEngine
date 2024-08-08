@@ -6,13 +6,11 @@ layout(location = 0) out vec4 outColor;
 
 layout (push_constant) uniform Push 
 {
-	mat4 transform;
-	vec3 color;
+	mat4 transform;		// Projection * View * Model
+	mat4 normalMatrix;
 } push;
-
 
 void main() 
 {
-	vec3 sunDir 
 	outColor = vec4(fragColor, 1.0);
 }

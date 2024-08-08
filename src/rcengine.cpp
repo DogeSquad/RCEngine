@@ -62,13 +62,21 @@ void RCEngine::run()
 void RCEngine::loadObjects()
 {
     //std::shared_ptr<RCEModel> rceModel = RCEModel::createModelFromFile(rceDevice, "../models/colored_cube.obj");
-    std::shared_ptr<RCEModel> rceModel = RCEModel::createModelFromFile(rceDevice, "../models/smooth_vase.obj");
+    // Loading smooth vase
+    std::shared_ptr<RCEModel> smoothVaseModel = RCEModel::createModelFromFile(rceDevice, "../models/smooth_vase.obj");
+    auto smoothVase = RCEObject::createObject();
+    smoothVase.model = smoothVaseModel;
+    smoothVase.transform.translation = { -.5f, 0.f, 2.5f };
+    smoothVase.transform.scale = glm::vec3{3.f};
+    objects.push_back(std::move(smoothVase));
 
-    auto obj = RCEObject::createObject();
-    obj.model = rceModel;
-    obj.transform.translation = { 0.f, 0.f, 2.5f };
-    obj.transform.scale = glm::vec3{3.f};
-    objects.push_back(std::move(obj));
+    // Loading flat vase
+    std::shared_ptr<RCEModel> flatVaseModel = RCEModel::createModelFromFile(rceDevice, "../models/flat_vase.obj");
+    auto flatVase = RCEObject::createObject();
+    flatVase.model = flatVaseModel;
+    flatVase.transform.translation = { .5f, 0.f, 2.5f };
+    flatVase.transform.scale = glm::vec3{ 3.f };
+    objects.push_back(std::move(flatVase));
 }
 
 };
