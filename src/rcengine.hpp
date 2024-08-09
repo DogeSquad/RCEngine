@@ -7,30 +7,35 @@
 #include "rce_model.hpp"
 #include "rce_object.hpp"
 #include "rce_renderer.hpp"
+#include "rce_descriptors.hpp"
 
 #include <memory>
 #include <vector>
 
-namespace rce {
-	class RCEngine {
-	public:
-		static constexpr int WIDTH = 1200;
-		static constexpr int HEIGHT = 800;
+namespace rce 
+{
+class RCEngine 
+{
+public:
+	static constexpr int WIDTH = 1200;
+	static constexpr int HEIGHT = 800;
 
-		RCEngine();
-		~RCEngine();
+	RCEngine();
+	~RCEngine();
 
-		RCEngine(const RCEngine&) = delete;
-		RCEngine& operator=(const RCEngine&) = delete;
+	RCEngine(const RCEngine&) = delete;
+	RCEngine& operator=(const RCEngine&) = delete;
 
-		void run();
-	private:
-		void loadObjects();
+	void run();
+private:
+	void loadObjects();
 
-		RCEWindow rceWindow{ WIDTH, HEIGHT, "Osprey RCE" };
-		RCEDevice rceDevice{ rceWindow };
-		RCERenderer rceRenderer{ rceWindow, rceDevice };
+	RCEWindow rceWindow{ WIDTH, HEIGHT, "Osprey RCE" };
+	RCEDevice rceDevice{ rceWindow };
+	RCERenderer rceRenderer{ rceWindow, rceDevice };
 
-		std::vector<RCEObject> objects;
-	};
+	std::unique_ptr<RCEDescriptorPool> globalPool{};
+	std::vector<RCEObject> objects;
+};
+
 }

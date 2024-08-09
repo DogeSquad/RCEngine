@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rce_device.hpp"
+#include "rce_buffer.hpp"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -55,14 +56,12 @@ public:
 private:
 	RCEDevice& rceDevice;
 
-	VkBuffer vertexBuffer;
-	VkDeviceMemory vertexBufferMemory;
+	std::unique_ptr<RCEBuffer> vertexBuffer;
 	uint32_t vertexCount;
 
-	VkBuffer indexBuffer;
-	VkDeviceMemory indexBufferMemory;
-	uint32_t indexCount;
 	bool hasIndexBuffer = false;
+	std::unique_ptr<RCEBuffer> indexBuffer;
+	uint32_t indexCount;
 
 	void createVertexBuffer(const std::vector<Vertex>& vertices);
 	void createIndexBuffer(const std::vector<uint32_t>& indices);
