@@ -35,7 +35,7 @@ private:
 	RCERenderer rceRenderer{ rceWindow, rceDevice };
 
 	std::unique_ptr<RCEDescriptorPool> globalPool{};
-	std::vector<RCEObject> objects;
+	RCEObject::Map objects;
 };
 
 }

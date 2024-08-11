@@ -68,8 +68,8 @@ namespace rce
 		shaderStages[1].pSpecializationInfo = nullptr;
 		shaderStages[1].pNext = nullptr;
 
-		auto attributeDescriptions = RCEModel::Vertex::getAttributeDescriptions();
-		auto bindingDescriptions = RCEModel::Vertex::getBindingDescriptions();
+		auto& attributeDescriptions = configInfo.attributeDescriptions;
+		auto& bindingDescriptions = configInfo.bindingDescriptions;
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
@@ -193,5 +193,8 @@ namespace rce
 		configInfo.dynamicStateInfo.pDynamicStates = configInfo.dynamicStateEnables.data();
 		configInfo.dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(configInfo.dynamicStateEnables.size());
 		configInfo.dynamicStateInfo.flags = 0;
+
+		configInfo.bindingDescriptions = RCEModel::Vertex::getBindingDescriptions();
+		configInfo.attributeDescriptions = RCEModel::Vertex::getAttributeDescriptions();
 	}
 }

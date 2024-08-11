@@ -115,10 +115,6 @@ void RCERenderer::createCommandBuffers()
 
 	if (vkAllocateCommandBuffers(rceDevice.device(), &allocInfo, commandBuffers.data()) != VK_SUCCESS)
 		throw std::runtime_error("failed to allocate command buffers.");
-
-	VkFenceCreateInfo fenceInfo{};
-	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-	fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 }
 
 void RCERenderer::freeCommandBuffers()

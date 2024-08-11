@@ -5,6 +5,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 #include <memory>
+#include <unordered_map>
 
 namespace rce
 {
@@ -25,6 +26,7 @@ struct TransformComponent
 class RCEObject {
 public:
 	using id_t = unsigned int;
+	using Map = std::unordered_map<id_t, RCEObject>;
 
 	static RCEObject createObject() {
 		static id_t currentId = 0;

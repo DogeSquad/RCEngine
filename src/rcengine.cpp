@@ -1,6 +1,7 @@
 #include "rcengine.hpp"
 
-#include "simple_render_system.hpp"
+#include "systems/simple_render_system.hpp"
+#include "systems/point_light_system.hpp"
 #include "rce_camera.hpp"
 #include "keyboard_movement_controller.hpp"
 #include "rce_buffer.hpp"
@@ -20,8 +21,11 @@
 namespace rce {
 
 struct GlobalUbo {
-    alignas(16) glm::mat4 projectionView{ 1.f };
-    alignas(16) glm::vec3 lightDirection = glm::normalize(glm::vec3(1.f, -3.f, -1.f));
+    alignas(16) glm::mat4 projection{ 1.f };
+    alignas(16) glm::mat4 view{ 1.f };
+    glm::vec4 ambientColor{ 1.f, 1.f, 1.f, 0.02f };
+    glm::vec3 lightPosition{ -1.f };
+    alignas(16) glm::vec4 lightColor{ .2f, .3f, .8f, 1.f };
 };
 
 RCEngine::RCEngine() { 
@@ -57,7 +61,7 @@ void RCEngine::run()
     }
 
     auto globalSetLayout = RCEDescriptorSetLayout::Builder(rceDevice)
-        .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+        .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
         .build();
 
     std::vector<VkDescriptorSet> globalDescriptorSets(RCESwapChain::MAX_FRAMES_IN_FLIGHT);
@@ -69,6 +73,7 @@ void RCEngine::run()
     }
 
 	SimpleRenderSystem simpleRenderSystem{ rceDevice, rceRenderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout() };
+    PointLightSystem pointLightSystem{ rceDevice, rceRenderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout() };
     RCECamera camera{};
     //camera.setViewDirection(glm::vec3{ 0.f }, glm::vec3{ .5f, 0.f, 1.f });
     camera.setViewTarget(glm::vec3(-1.f, -2.f, 2.f), glm::vec3(0.f, 0.f, 2.5f));
@@ -102,17 +107,20 @@ void RCEngine::run()
                 frameTime,
                 commandBuffer,
                 camera,
-                globalDescriptorSets[frameIndex]
+                globalDescriptorSets[frameIndex],
+                objects
             };
             // prepare & update
             GlobalUbo ubo{};
-            ubo.projectionView = camera.getProjection() * camera.getView();
+            ubo.projection = camera.getProjection();
+            ubo.view = camera.getView();
             uboBuffers[frameIndex]->writeToBuffer(&ubo);
             uboBuffers[frameIndex]->flush();
 
             // render
 			rceRenderer.beginSwapChainRenderPass(commandBuffer);
-			simpleRenderSystem.renderObjects(frameInfo, objects);
+			simpleRenderSystem.renderObjects(frameInfo);
+            pointLightSystem.render(frameInfo);
 			rceRenderer.endSwapChainRenderPass(commandBuffer);
 			rceRenderer.endFrame();
 		}
@@ -122,15 +130,15 @@ void RCEngine::run()
 }
 
 void RCEngine::loadObjects()
-{
-    //std::shared_ptr<RCEModel> rceModel = RCEModel::createModelFromFile(rceDevice, "../models/colored_cube.obj");
+{    
     // Loading smooth vase
     std::shared_ptr<RCEModel> smoothVaseModel = RCEModel::createModelFromFile(rceDevice, "../models/smooth_vase.obj");
     auto smoothVase = RCEObject::createObject();
     smoothVase.model = smoothVaseModel;
-    smoothVase.transform.translation = { -.5f, 0.f, 2.5f };
-    smoothVase.transform.scale = glm::vec3{3.f};
-    objects.push_back(std::move(smoothVase));
+    smoothVase.transform.translation = { -.5f, -1.f, 2.5f };
+    smoothVase.transform.rotation = glm::normalize(glm::vec3(-1.f, 2.5f, 2.f));
+    smoothVase.transform.scale = glm::vec3{ 3.f };
+    objects.emplace(smoothVase.getId(), std::move(smoothVase));
 
     // Loading flat vase
     std::shared_ptr<RCEModel> flatVaseModel = RCEModel::createModelFromFile(rceDevice, "../models/flat_vase.obj");
@@ -138,7 +146,15 @@ void RCEngine::loadObjects()
     flatVase.model = flatVaseModel;
     flatVase.transform.translation = { .5f, 0.f, 2.5f };
     flatVase.transform.scale = glm::vec3{ 3.f };
-    objects.push_back(std::move(flatVase));
+    objects.emplace(flatVase.getId(), std::move(flatVase));
+
+    // Loading ground
+    std::shared_ptr<RCEModel> floorModel = RCEModel::createModelFromFile(rceDevice, "../models/quad.obj");
+    auto floor = RCEObject::createObject();
+    floor.model = floorModel;
+    floor.transform.translation = { 0.f, 0.f, 2.5f };
+    floor.transform.scale = glm::vec3{ 2.f , 1.f, 2.f};
+    objects.emplace(floor.getId(), std::move(floor));
 }
 
 };

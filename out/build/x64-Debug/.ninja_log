@@ -1,0 +1,17 @@
+# ninja log v5
+30	720	7451144984153089	CMakeFiles/RCEngine.dir/src/rce_window.cpp.obj	2365ccda0ff35f2a
+6	725	7451144984163090	CMakeFiles/RCEngine.dir/src/rce_buffer.cpp.obj	7513746d607ecd4a
+8	793	7451144984788094	CMakeFiles/RCEngine.dir/src/rce_camera.cpp.obj	7ed506648391763
+11	896	7451144985878093	CMakeFiles/RCEngine.dir/src/rce_descriptors.cpp.obj	ef386c3e7713cc4c
+1	1010	7451144987048093	CMakeFiles/RCEngine.dir/src/keyboard_movement_controller.cpp.obj	e010e1e69b63b337
+19	1011	7451144987043091	CMakeFiles/RCEngine.dir/src/rce_object.cpp.obj	facf718de251afd
+36	1059	7451144987533092	CMakeFiles/RCEngine.dir/src/systems/point_light_system.cpp.obj	1a00f18f34470c7c
+25	1083	7451144987778092	CMakeFiles/RCEngine.dir/src/rce_renderer.cpp.obj	20ca52f9027e0418
+27	1116	7451144988118094	CMakeFiles/RCEngine.dir/src/rce_swap_chain.cpp.obj	27771bb5b9b8458e
+14	1164	7451144988593091	CMakeFiles/RCEngine.dir/src/rce_device.cpp.obj	af987a273fc885bb
+22	1192	7451144988878092	CMakeFiles/RCEngine.dir/src/rce_pipeline.cpp.obj	8cfdab57dd4f52e8
+4	1255	7451144989503092	CMakeFiles/RCEngine.dir/src/main.cpp.obj	6247f8d004308449
+33	1293	7451144989883097	CMakeFiles/RCEngine.dir/src/rcengine.cpp.obj	42287965d972b795
+722	1358	7451144990548105	CMakeFiles/RCEngine.dir/src/systems/simple_render_system.cpp.obj	9844f30127e433d0
+16	1637	7451144993318097	CMakeFiles/RCEngine.dir/src/rce_model.cpp.obj	df7e6da4fc3fb288
+1637	1869	7451144995528094	RCEngine.exe	500550f65fec0b22
