@@ -11,6 +11,7 @@
 
 #include <memory>
 #include <vector>
+#include <map>
 
 namespace rce {
 	class PointLightSystem {
@@ -21,6 +22,7 @@ namespace rce {
 		PointLightSystem(const PointLightSystem&) = delete;
 		PointLightSystem& operator=(const PointLightSystem&) = delete;
 
+		void update(FrameInfo& frameInfo, GlobalUbo& ubo);
 		void render(FrameInfo& frameInfo);
 	private:
 		void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);

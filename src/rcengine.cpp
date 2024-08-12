@@ -20,14 +20,6 @@
 
 namespace rce {
 
-struct GlobalUbo {
-    alignas(16) glm::mat4 projection{ 1.f };
-    alignas(16) glm::mat4 view{ 1.f };
-    glm::vec4 ambientColor{ 1.f, 1.f, 1.f, 0.02f };
-    glm::vec3 lightPosition{ -1.f };
-    alignas(16) glm::vec4 lightColor{ .2f, .3f, .8f, 1.f };
-};
-
 RCEngine::RCEngine() { 
     globalPool = RCEDescriptorPool::Builder(rceDevice)
         .setMaxSets(RCESwapChain::MAX_FRAMES_IN_FLIGHT)
@@ -114,13 +106,17 @@ void RCEngine::run()
             GlobalUbo ubo{};
             ubo.projection = camera.getProjection();
             ubo.view = camera.getView();
+            ubo.inverseView = camera.getInverseView();
+            pointLightSystem.update(frameInfo, ubo);
             uboBuffers[frameIndex]->writeToBuffer(&ubo);
             uboBuffers[frameIndex]->flush();
 
             // render
 			rceRenderer.beginSwapChainRenderPass(commandBuffer);
+
 			simpleRenderSystem.renderObjects(frameInfo);
             pointLightSystem.render(frameInfo);
+
 			rceRenderer.endSwapChainRenderPass(commandBuffer);
 			rceRenderer.endFrame();
 		}
@@ -135,7 +131,7 @@ void RCEngine::loadObjects()
     std::shared_ptr<RCEModel> smoothVaseModel = RCEModel::createModelFromFile(rceDevice, "../models/smooth_vase.obj");
     auto smoothVase = RCEObject::createObject();
     smoothVase.model = smoothVaseModel;
-    smoothVase.transform.translation = { -.5f, -1.f, 2.5f };
+    smoothVase.transform.translation = { -.5f, -1, 0.f };
     smoothVase.transform.rotation = glm::normalize(glm::vec3(-1.f, 2.5f, 2.f));
     smoothVase.transform.scale = glm::vec3{ 3.f };
     objects.emplace(smoothVase.getId(), std::move(smoothVase));
@@ -144,7 +140,7 @@ void RCEngine::loadObjects()
     std::shared_ptr<RCEModel> flatVaseModel = RCEModel::createModelFromFile(rceDevice, "../models/flat_vase.obj");
     auto flatVase = RCEObject::createObject();
     flatVase.model = flatVaseModel;
-    flatVase.transform.translation = { .5f, 0.f, 2.5f };
+    flatVase.transform.translation = { .5f, 0.f, 0.f };
     flatVase.transform.scale = glm::vec3{ 3.f };
     objects.emplace(flatVase.getId(), std::move(flatVase));
 
@@ -152,9 +148,29 @@ void RCEngine::loadObjects()
     std::shared_ptr<RCEModel> floorModel = RCEModel::createModelFromFile(rceDevice, "../models/quad.obj");
     auto floor = RCEObject::createObject();
     floor.model = floorModel;
-    floor.transform.translation = { 0.f, 0.f, 2.5f };
+    floor.transform.translation = { 0.f, 0.f, 0.f };
     floor.transform.scale = glm::vec3{ 2.f , 1.f, 2.f};
     objects.emplace(floor.getId(), std::move(floor));
+
+    std::vector<glm::vec3> lightColors{
+        {1.f, .1f, .1f},
+        {.1f, .1f, 1.f},
+        {.1f, 1.f, .1f},
+        {1.f, 1.f, .1f},
+        {.1f, 1.f, 1.f},
+        {1.f, 1.f, 1.f}  //
+    };
+
+    for (int i = 0; i < lightColors.size(); i++) {
+        auto pointLight = RCEObject::makePointLight(.2f);
+        pointLight.color = lightColors[i];
+        auto rotateLight = glm::rotate(
+            glm::mat4(1.f),
+            (i * glm::two_pi<float>()) / lightColors.size(),
+            { 0.f, -1.f, 0.f });
+        pointLight.transform.translation = glm::vec3(rotateLight * glm::vec4(-1.f, -1.f, -1.f, 1.f));
+        objects.emplace(pointLight.getId(), std::move(pointLight));
+    }
 }
 
 };
