@@ -20,6 +20,16 @@
 
 namespace rce {
 
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    // ESC to close app
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, GLFW_TRUE);
+
+    // F1 to toggle between Maximize and Restore
+    if (glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS) glfwGetWindowAttrib(window, GLFW_MAXIMIZED) == GLFW_TRUE ? glfwRestoreWindow(window) : glfwMaximizeWindow(window);
+}
+
 RCEngine::RCEngine() { 
     globalPool = RCEDescriptorPool::Builder(rceDevice)
         .setMaxSets(RCESwapChain::MAX_FRAMES_IN_FLIGHT)
@@ -34,6 +44,8 @@ RCEngine::RCEngine() {
     glfwSetWindowIcon(rceWindow.getGLFWwindow(), 2, images);
     stbi_image_free(images[0].pixels);
     stbi_image_free(images[1].pixels);
+
+    glfwSetKeyCallback(rceWindow.getGLFWwindow(), key_callback);
 }
 
 RCEngine::~RCEngine() {}
@@ -77,9 +89,6 @@ void RCEngine::run()
 
 	while (!rceWindow.shouldClose()) {
 		glfwPollEvents();
-
-        // ESC to close app
-        if (glfwGetKey(rceWindow.getGLFWwindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(rceWindow.getGLFWwindow(), GLFW_TRUE);
 
         auto newTime = std::chrono::high_resolution_clock::now();
         float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
